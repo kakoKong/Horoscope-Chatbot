@@ -31,7 +31,7 @@ class ChatBot():
 
   repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
   llm = HuggingFaceHub(
-      repo_id=repo_id, model_kwargs={"temperature": 0.7}, huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
+      repo_id=repo_id, model_kwargs={"temperature": 0.7, "max_length": 100, "top_k": 50}, huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
   )
 
   from langchain import PromptTemplate
