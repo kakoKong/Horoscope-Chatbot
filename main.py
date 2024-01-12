@@ -22,38 +22,41 @@ class ChatBot():
       environment='gcp-starter'
   )
 
-  index_name = "mytestindex"
+  index_name = "langchain-demo"
 
   if index_name not in pinecone.list_indexes():
     pinecone.create_index(name=index_name, metric="cosine", dimension=768)
-
-  docsearch = Pinecone.from_documents(docs, embeddings, index_name=index_name)
+    docsearch = Pinecone.from_documents(docs, embeddings, index_name=index_name)
+  else:
+    docsearch = Pinecone.from_existing_index(index_name, embeddings)
 
   repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
   llm = HuggingFaceHub(
-      repo_id=repo_id, model_kwargs={"temperature": 0.7, "max_length": 100, "top_k": 50}, huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
+      repo_id=repo_id, model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50}, huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
   )
 
   from langchain import PromptTemplate
 
   template = """
-  You are a seer. These Human will ask you a questions about their life. Using the following context, answer them in less than 2 sentences. Add emojis at the end of every responses
+  You are a seer. These Human will ask you a questions about their life. Use following piece of context to answer the question. 
+  If you don't know the answer, just say you don't know. Keep the answer within 2 sentences and concise.
   Answer your answer without mentioning any stars. 
-  Always start your message with: this month for you as a <star sign>...
 
-  {context}
+  Context: {context}
+  Question: {question}
+  Answer: 
 
-  {question}
   """
 
   prompt = PromptTemplate(template=template, input_variables=["context", "question"])
 
   from langchain.chains import RetrievalQA
+  from langchain.schema.runnable import RunnablePassthrough
+  from langchain.schema.output_parser import StrOutputParser
 
-  qa_chain = RetrievalQA.from_chain_type(
-      llm=llm,
-      chain_type="stuff",
-      retriever=docsearch.as_retriever(search_kwargs={"k": 2}),
-      return_source_documents=True,
-      chain_type_kwargs={"prompt": prompt},
+  rag_chain = (
+    {"context": docsearch.as_retriever(),  "question": RunnablePassthrough()} 
+    | prompt 
+    | llm
+    | StrOutputParser() 
   )

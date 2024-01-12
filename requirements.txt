@@ -1,6 +1,4 @@
-langchain==0.0.351
+langchain
 pinecone-client
-sentence_transformers
 python-dotenv
-urllib3==1.26.6
 streamlit
