@@ -1,4 +1,4 @@
-langchain
-pinecone-client
-python-dotenv
-streamlit
+langchain==0.1.1
+pinecone-client==2.2.4
+python-dotenv==1.0.0
+streamlit==1.29.0

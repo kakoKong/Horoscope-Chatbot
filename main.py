@@ -3,7 +3,6 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Pinecone
 from langchain.llms import HuggingFaceHub
-from langchain.chains import LLMChain
 import pinecone
 from dotenv import load_dotenv
 import os
@@ -39,8 +38,8 @@ class ChatBot():
 
   template = """
   You are a seer. These Human will ask you a questions about their life. Use following piece of context to answer the question. 
-  If you don't know the answer, just say you don't know. Keep the answer within 2 sentences and concise.
-  Answer your answer without mentioning any stars. 
+  If you don't know the answer, just say you don't know. 
+  You answer with short and concise answer, no longer than2 sentences.
 
   Context: {context}
   Question: {question}
@@ -50,7 +49,6 @@ class ChatBot():
 
   prompt = PromptTemplate(template=template, input_variables=["context", "question"])
 
-  from langchain.chains import RetrievalQA
   from langchain.schema.runnable import RunnablePassthrough
   from langchain.schema.output_parser import StrOutputParser
 
