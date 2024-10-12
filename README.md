@@ -4,5 +4,5 @@ This is chatbot for you to chat with seer who knows your fate. This version only
 To start this application:
 Run
 ```
-streamlit run steamlit.py
+streamlit run run_steamlit.py
 ```
